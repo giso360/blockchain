@@ -7,6 +7,8 @@ from hashlib import sha256
 client = pymongo.MongoClient("localhost", 27017)
 db = client.blockchain
 nonce = 4294967295
+range = [x for x in range(nonce)]
+
 
 def digest_text(text):
     s256 = sha256()
@@ -21,34 +23,25 @@ db.blockinfo.insert_one(genesis_block)
 
 def find_max_id():
     x = db.blockinfo.find_one(sort=[("seq_no", pymongo.DESCENDING)])
-    return x["seq_no"], x["previous_hash"], x["nonce"]
+    return x["seq_no"], x["previous_hash"]
 
 
 def generate_hash_phrase(text):
-    nonce = 0
-    start = datetime.now()
-    for integer in range(nonce):
-        text += str(nonce)
-        hash = digest_text(nonce)
-        if hash[:3] == "000":
-            nonce = integer
-            stop = datetime.now()
-            break
-    return hash, nonce, (stop-start).seconds, stop
+    a = sc.parallelize(range)
+    a2 = a.map(lambda x: )
+    return hash, nonce2
 
 
 
 def load_to_mongo(rdd):
     a = rdd.collect()
     text = a[0][1]
-    seq_no = find_max_id()[0]
-    previous_hash = find_max_id()[1]
-    # Create Function
-    # start = datetime.now()
-    # Do mining here and find nonce & hash_phrase
-    # stop = datetime.now()
-    # mine_duration = (stop - start).seconds
+    seq_no, previous_hash = find_max_id()
     load_document = {}
+    start = datetime.now()
+    hash = generate_hash_phrase(previous_hash + text)
+    stop = datetime.now()
+    # mine_duration = (stop - start).seconds
     load_document["seq_no"] = seq_no + 1
     # load_document["nonce"] = nonce
     load_document["hash_phrase"] = generate_hash_phrase(previous_hash + text)
