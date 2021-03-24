@@ -9,13 +9,13 @@ db = client.blockchain
 
 max = 2 ** 32
 
+
 def digest_text(seq_no, text, e, previous_hash):
     s256 = sha256()
-    # s256.update(str(seq_no).encode())
-    # s256.update(text.encode())
-    # s256.update(previous_hash.encode())
-    t = str(seq_no) + text + str(e) + previous_hash
-    s256.update(t.encode())
+    s256.update(str(seq_no).encode())
+    s256.update(text.encode())
+    s256.update(str(e).encode())
+    s256.update(previous_hash.encode())
     return s256.hexdigest()
 
 
@@ -27,8 +27,10 @@ def find_max_id():
     x = db.blockinfo.find_one(sort=[("seq_no", pymongo.DESCENDING)])
     return x["seq_no"]
 
+
 sc = SparkContext("local[*]", "blockChain")
 sc.setLogLevel("WARN")
+
 
 def generate_hash_phrase(seq_no, text, previous_hash, batch_size=10000, difficulty=3):
     res = []
