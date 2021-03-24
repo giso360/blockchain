@@ -36,7 +36,7 @@ print(x["nonce"])
 
 # question 2
 print("\n# question 2")
-x = db.blockinfo.find_one(sort=[("mine_time", pymongo.ASCENDING)])
+x = db.blockinfo.find_one(sort=[("mine_duration", pymongo.ASCENDING)])
 print(x)
 
 # question 3
@@ -91,7 +91,7 @@ print(len(a))
 
 # question 6: find total mining time of n_first_blocks
 print("\n# question 6")
-n_first_blocks = 2
+n_first_blocks = 100
 
 x = db.blockinfo.aggregate(
     [

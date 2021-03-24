@@ -9,12 +9,12 @@ db = client.blockchain
 
 max = 2 ** 32
 
-def digest_text(seq_no, text, previous_hash):
+def digest_text(seq_no, text, e, previous_hash):
     s256 = sha256()
     # s256.update(str(seq_no).encode())
     # s256.update(text.encode())
     # s256.update(previous_hash.encode())
-    t = str(seq_no) + text + previous_hash
+    t = str(seq_no) + text + str(e) + previous_hash
     s256.update(t.encode())
     return s256.hexdigest()
 
@@ -38,10 +38,8 @@ def generate_hash_phrase(seq_no, text, previous_hash, batch_size=10000, difficul
         if range_max > max:
             range_max = max
         a = [x for x in range(i, range_max)]
-        # rdd = sc.parallelize(a).map(lambda e: (digest_text(seq_no, text, previous_hash), e)) \
-        #     .filter(lambda f: validate(f[0], difficulty)).collect()
-        rdd = sc.parallelize(a).map(lambda e: (digest_text(seq_no, text, previous_hash), e)) \
-            .filter(lambda f: f[0][:3] == '000').collect()
+        rdd = sc.parallelize(a).map(lambda e: (digest_text(seq_no, text, e, previous_hash), e)) \
+            .filter(lambda f: validate(f[0], difficulty)).collect()
         print("rdd" + str(rdd) + "/ range -" + str(range_max))
         if len(rdd) > 0:
             res.append(rdd[0])
@@ -59,30 +57,30 @@ db.blockinfo.insert_one(genesis_block)
 previous_hash_temp = genesis_hash_value
 
 
-# def load_to_mongo(rdd):
-#     global previous_hash_temp
-#     a = rdd.collect()
-#     text = a[0][1]
-#     seq_no = find_max_id() + 1
-#     load_document = {}
-#     hash_value, nonce, mine_duration = generate_hash_phrase(seq_no, text, previous_hash_temp)
-#     load_document["seq_no"] = seq_no
-#     load_document["nonce"] = nonce
-#     load_document["mine_duration"] = mine_duration
-#     db.blockinfo.insert_one(load_document).inserted_id
-#     previous_hash_temp = hash_value
+def load_to_mongo(rdd):
+    global previous_hash_temp
+    a = rdd.collect()
+    text = a[0][1]
+    seq_no = find_max_id() + 1
+    load_document = {}
+    hash_value, nonce, mine_duration = generate_hash_phrase(seq_no, text, previous_hash_temp)
+    load_document["seq_no"] = seq_no
+    load_document["nonce"] = nonce
+    load_document["mine_duration"] = mine_duration
+    db.blockinfo.insert_one(load_document).inserted_id
+    previous_hash_temp = hash_value
 
 
 # Create a stream context with interval 15 seconds
-# ssc = StreamingContext(sc, 15)  # 120 secs
+ssc = StreamingContext(sc, 15)  # 120 secs
 # Get lines of each interval
-# lines = ssc.socketTextStream('localhost', 9999)
+lines = ssc.socketTextStream('localhost', 9999)
 
 # Generate DStream that concatenates all lines contained in a single batch
-# batch = lines.map(lambda x: ("block", x)).reduceByKey(lambda x, y: str(x) + str(y))
-# batch.pprint()
+batch = lines.map(lambda x: ("block", x)).reduceByKey(lambda x, y: str(x) + str(y))
+batch.pprint()
 # Generate hash values and store to DB
-# batch.foreachRDD(load_to_mongo)
+batch.foreachRDD(load_to_mongo)
 
-# ssc.start()
-# ssc.awaitTermination()
+ssc.start()
+ssc.awaitTermination()
