@@ -51,7 +51,6 @@ x = db.blockinfo.aggregate([
         }
     }
 ])
-# print(x)
 a = list(x)
 print(a[0]['avg_mine_duration'])
 
