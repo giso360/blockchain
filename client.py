@@ -8,9 +8,18 @@ client = pymongo.MongoClient("localhost", 27017)
 db = client.blockchain
 
 max = 2 ** 32
+mine_difficulty = 3
 
 
 def digest_text(seq_no, text, e, previous_hash):
+    """
+
+    :param seq_no:
+    :param text:
+    :param e:
+    :param previous_hash:
+    :return:
+    """
     s256 = sha256()
     s256.update(str(seq_no).encode())
     s256.update(text.encode())
@@ -20,19 +29,38 @@ def digest_text(seq_no, text, e, previous_hash):
 
 
 def validate(hashed, difficulty):
+    """
+
+    :param hashed:
+    :param difficulty:
+    :return:
+    """
     return hashed[:difficulty] == difficulty * "0"
 
 
 def find_max_id():
+    """
+
+    :return:
+    """
     x = db.blockinfo.find_one(sort=[("seq_no", pymongo.DESCENDING)])
     return x["seq_no"]
 
-
+#
 sc = SparkContext("local[*]", "blockChain")
 sc.setLogLevel("WARN")
 
 
-def generate_hash_phrase(seq_no, text, previous_hash, batch_size=10000, difficulty=3):
+def generate_hash_phrase(seq_no, text, previous_hash, batch_size=10000, difficulty=mine_difficulty):
+    """
+
+    :param seq_no:
+    :param text:
+    :param previous_hash:
+    :param batch_size:
+    :param difficulty:
+    :return:
+    """
     res = []
     start = datetime.now()
     for i in range(0, max, batch_size):
@@ -42,7 +70,6 @@ def generate_hash_phrase(seq_no, text, previous_hash, batch_size=10000, difficul
         a = [x for x in range(i, range_max)]
         rdd = sc.parallelize(a).map(lambda e: (digest_text(seq_no, text, e, previous_hash), e)) \
             .filter(lambda f: validate(f[0], difficulty)).collect()
-        print("rdd" + str(rdd) + "/ range -" + str(range_max))
         if len(rdd) > 0:
             res.append(rdd[0])
             break
@@ -60,6 +87,11 @@ previous_hash_temp = genesis_hash_value
 
 
 def load_to_mongo(rdd):
+    """
+
+    :param rdd:
+    :return:
+    """
     global previous_hash_temp
     a = rdd.collect()
     text = a[0][1]
