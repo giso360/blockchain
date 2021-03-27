@@ -40,4 +40,12 @@ This is small text file against which the functionality of the server (server.py
 
 Set up venv and issue command: pip install -r requirements.txt
 
+------
 
+### How to run
+1. In client.py at row 26 change the variable mine_difficulty based on the desired difficulty
+2. Start MongoDB
+3. Open the terminal
+4. Navigate to files path
+5. Start server.py: Windows-> python server.py  Linux-> python3 server.py
+6. In an other terminal at the files path start client.py: Windows-> python server.py  Linux-> python3 server.py
