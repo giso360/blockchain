@@ -1,3 +1,13 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Mar 20 17:20:36 2021
+
+@author: MarousopoulouMaria
+@author: SkoufiasGeorge
+"""
+print(__doc__)
+
+
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 import pymongo
