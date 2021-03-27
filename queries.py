@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Mar 25 18:30:40 2021
+
+@author: MarousopoulouMaria
+@author: SkoufiasGeorge
+"""
+print(__doc__)
+
 import pymongo
 
 client = pymongo.MongoClient("localhost", 27017)
