@@ -14,7 +14,7 @@ db = client.blockchain
 max = 2 ** 32
 
 # Number of leading zeros for the mining problem
-mine_difficulty = 3
+mine_difficulty = 6
 
 
 def digest_text(seq_no, text, e, previous_hash):
@@ -62,10 +62,11 @@ def find_max_id():
 sc = SparkContext("local[*]", "blockChain")
 
 # allow ONLY warning level logs to be printed to console
-sc.setLogLevel("WARN")
+# sc.setLogLevel("WARN")
+sc.setLogLevel("OFF")
 
 
-def generate_hash_phrase(seq_no, text, previous_hash, batch_size=10000, difficulty=mine_difficulty):
+def generate_hash_phrase(seq_no, text, previous_hash, batch_size=1000000, difficulty=mine_difficulty):
     """
     This method is used to obtain the blocks' hash value alongside the nonce and the
     respective mine duration.
@@ -133,7 +134,13 @@ def load_to_mongo(rdd):
 
 
 # Create a stream context with interval 120 seconds
-ssc = StreamingContext(sc, 120)
+# to meet project requirements
+# OR 15 seconds to run
+# investigative tasks of mining metadata w.r.t
+# level of difficulty [3, 5, 7]
+ssc = StreamingContext(sc, 15)
+# ssc = StreamingContext(sc, 120)
+
 # Get lines of each interval
 lines = ssc.socketTextStream('localhost', 9999)
 
