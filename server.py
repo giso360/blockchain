@@ -2,6 +2,8 @@ import socket
 import time
 import random
 
+# Github repo: https://github.com/giso360/blockchain
+
 # Server port set as constant
 PORT = 9999
 

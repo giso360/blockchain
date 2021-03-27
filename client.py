@@ -137,7 +137,7 @@ def load_to_mongo(rdd):
 # to meet project requirements
 # OR 15 seconds to run
 # investigative tasks of mining metadata w.r.t
-# level of difficulty [3, 5, 7]
+# level of difficulty using the enumerations => [3, 5, 7]
 ssc = StreamingContext(sc, 15)
 # ssc = StreamingContext(sc, 120)
 
