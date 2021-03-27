@@ -1,3 +1,12 @@
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Mar 19 13:15:23 2021
+
+@author: MarousopoulouMaria
+@author: SkoufiasGeorge
+"""
+print(__doc__)
+
 import socket
 import time
 import random
