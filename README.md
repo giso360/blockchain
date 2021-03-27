@@ -19,6 +19,7 @@ The responsibility of this unit is to listen to the socket connection. Using PyS
 - The text transactions
 - The value of the previous hash
 - An integer ranging from 0...4294967295
+
 The mining process metadata for each block are stored to a MongoDB.  
 
 ------
