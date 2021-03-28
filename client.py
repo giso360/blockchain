@@ -7,6 +7,10 @@ Created on Sat Mar 20 17:20:36 2021
 """
 print(__doc__)
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> master
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 import pymongo
